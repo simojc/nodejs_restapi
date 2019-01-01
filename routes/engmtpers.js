@@ -2,21 +2,10 @@
 
 const express = require('express')
 const router = express.Router()
-const mysql = require('mysql')
 
 // Le pool de connexion permet de gerrer la monté en charge 
 // lorsque plusisuers utilisateurs essaient de se connecter simultanément
-const pool = mysql.createPool({
-    connectionLimit: 10,
-    host: 'localhost',
-    user: 'reunion',
-    password: 'reunion',
-    database: 'reunion'
-})
-
-function getConnection() {
-    return pool
-}
+const pool = require('../database')
 
 router.get('/engmtpers/:id', (req, res) => {
     console.log("Fecthing engmtpers with id: " + req.params.id)
@@ -36,7 +25,7 @@ router.get('/engmtpers/:id', (req, res) => {
                         LEFT JOIN pers  ON engmtpers.pers_id = pers.id
                         WHERE engmtpers.pers_id = ?
                         `;
-    getConnection().query(queryString, [Id], (err, rows, fields) => {
+    pool.query(queryString, [Id], (err, rows, fields) => {
         if (err) {
             console.log("Failled to query for engmtpers: " + err)
             res.sendStatus(500)

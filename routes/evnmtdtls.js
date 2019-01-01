@@ -2,22 +2,12 @@
 
 const express = require('express')
 const router = express.Router()
-const mysql = require('mysql')
 
 // Le pool de connexion permet de gerrer la monté en charge 
 // lorsque plusisuers utilisateurs essaient de se connecter simultanément
-const pool = mysql.createPool({
-    connectionLimit: 10,
-    host: 'localhost',
-    user: 'reunion',
-    password: 'reunion',
-    database: 'reunion'
-})
+const pool = require('../database')
 
-function getConnection() {
-    return pool
-}
-//  evnmtdtls?evnmt_id=1
+
 router.get("/evnmtdtls", (req, res) => {
     var queryString;
     var evnmt_id = req.query.evnmt_id;
@@ -36,7 +26,7 @@ router.get("/evnmtdtls", (req, res) => {
         `;
     }
        
-    getConnection().query(queryString, [evnmt_id], (err, rows, fiels) => {
+    pool.query(queryString, [evnmt_id], (err, rows, fiels) => {
         if (err) {
             console.log("Failled to query for evnmtdtls: " + err)
             res.sendStatus(500)
@@ -53,7 +43,7 @@ router.get('/evnmtdtls/:id', (req, res) => {
     console.log("Fecthing evnmtdtls with id: " + req.params.id)
     const Id = req.params.id
     const queryString = "SELECT * FROM evnmtdtls WHERE id = ?"
-    getConnection().query(queryString, [Id], (err, rows, fields) => {
+    pool.query(queryString, [Id], (err, rows, fields) => {
         if (err) {
             console.log("Failled to query for evnmtdtls: " + err)
             res.sendStatus(500)
