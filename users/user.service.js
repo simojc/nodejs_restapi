@@ -36,20 +36,56 @@ module.exports = {
     _delete
 };
 
+
 async function authenticate({ email, password }) {
     // console.log("email = " + email);
     //console.log("users = " + JSON.stringify(users) );
     const user = users.find(u => u.email == email && u.password == password);
-   // console.log("user = " + JSON.stringify(user) );
+    console.log("user = " + JSON.stringify(user) );
     if (user) {
         const token = jwt.sign({ sub: user.id }, config.secret);
         const { password, ...userWithoutPassword } = user;
         console.log("token = " + token );
+        
         return {
             ...userWithoutPassword,
             token
         };
     }
+}
+
+async function authenticate_1({ email, password }) {
+     console.log("email = " + email);
+    //console.log("users = " + JSON.stringify(users) );
+   // const user = users.find(u => u.email == email && u.password == password);
+   // console.log("user = " + JSON.stringify(user) );
+
+  pool.query("SELECT * FROM users WHERE users.email = ? AND password = ?", [email, password], (err, rows, fields) => {
+    if (err) {
+        console.log("Échec lors de la recherche dans la table users: " + err)
+        //res.sendStatus(500)
+        // res.end("Failled to query for users: " + err);
+        res.end("Échec lors de la recherche dans la table users: " + err);
+        return 
+    }
+  const user = rows[0];
+   console.log(" user =  " + JSON.stringify(user));
+    if ( user) {
+        const token = jwt.sign({ sub: user.id }, config.secret);
+        const { password, ...userWithoutPassword } = user;
+        console.log(" 1 user = " + user.email );
+        console.log(" 2 password = " + password );
+        console.log(" user =  " + JSON.stringify(user));
+        return {
+            ...userWithoutPassword,
+            token
+        };
+    }
+    console.log(" User vide "  );
+
+}
+)
+
 }
 
 async function getAll() {
@@ -127,31 +163,38 @@ async function create(req, res) {
 }
 
 async function update(id, userParam) {
-    //const user = await User.findById(id);
-    const user = users.find(u => u.id === id);
-    // validate
-    if (!user) throw 'User not found'; // existence de l'utilisateur
-    // if (user.email !== userParam.email && await users.find(u => u.email === userParam.email)) {
-    //     throw 'Email "' + userParam.email + '" is already taken';
-    // }
-    // Nouvel courriel  déjà utilisé
-    const password = userParam.password
-    const Id = req.params.id
-    // hash password if it was entered
-    // À décommenter si les mots de passes sont cryptés
-    /*   if (userParam.password) {
-          password = bcrypt.hashSync(userParam.password, 10);
-      } */
-    // const queryString = "INSERT INTO users(groupe_id,name,email,password) VALUES(groupe,?,?,?)"
-    const queryString = "UPDATE users SET  password = ? WHERE id = ?"
-    try {
-        var result = await pool.query(queryString, [password, Id]);
-    } catch(err) {
-        throw new Error(err);
-    }
-    return;
+    // console.log("userParam = " + JSON.stringify(userParam) );
+    pool.query("SELECT * FROM users WHERE users.id = ? ", [id], (err, rows, fields) => {
+        if (err) {
+            console.log("Échec lors de la sélection de la table users: " + err)
+            //res.sendStatus(500)
+            // res.end("Failled to query for users: " + err);
+            res.end("Échec lors de la sélection de la table users: " + err);
+            return
+        }
+        if (rows.length === 1) {
+            const password = userParam.password
+            let admin = 0
+            if (userParam.admin) { admin = userParam.admin }
+            // console.log("admin = " + admin)
+            
+            // hash password if it was entered
+            // À décommenter si les mots de passes sont cryptés
+            /*   if (userParam.password) {
+                  password = bcrypt.hashSync(userParam.password, 10);
+              } */
+            // const queryString = "INSERT INTO users(groupe_id,name,email,password) VALUES(groupe,?,?,?)"
+            const queryString = "UPDATE users SET password = ?, admin = ? WHERE id = ?"
+            try {
+                var result = pool.query(queryString, [password, admin, id]);
+            } catch (err) {
+                throw new Error(err);
+            }
+            return;
+        }
+    })
 }
-
+  
 async function _delete(id) {
     const queryString = "DELETE FROM users WHERE id = ?"
     try {
