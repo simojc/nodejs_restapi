@@ -55,21 +55,7 @@ router.get("/locations", (req, res) => {
     })
 
 })
-router.get('/groupe/:id', (req, res) => {
-    const Id = req.params.id
-    const queryString = "SELECT * FROM groupes WHERE id = ?"
-    pool.query(queryString, [Id], (err, rows, fields) => {
-        if (err) {
-            console.log("Failled to query for groupe by Id: " + err)
-            res.sendStatus(500)
-            res.end
-            return
-        }
-        console.log("Interrogation de base des données réussie groupe by Id")
-      
-        res.json(rows)
-    })
-}) 
+ 
 
 
 /* router.post('/user_create', (req, res) => {

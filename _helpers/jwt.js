@@ -3,26 +3,28 @@ const config = require('../config.json');
 
 module.exports = jwt;
 
+const pathToRegexp = require('path-to-regexp');
+
 function jwt() {
     const { secret } = config;
     return expressJwt({ secret }).unless({
         path: [
             // public routes that don't require authentication
-            '/users/register',
-            '/users/authenticate',
-            '/evnmts',
-            '/evnmtdtls',
-            { url: /^\/evnmtdtls\/.*/, methods: ['GET'] },
-            { url: /^\/evnmts\/.*/, methods: ['GET'] }
+            '/api/users/register',
+            '/api/users/authenticate',
+            { url: /^\/meeting\/.*/, methods: ['GET', 'PUT'] },
+    
+            { url: '/api/evnmts', methods: ['GET'] },
+            { url: '/api/evnmtdtls', methods: ['GET'] },
+            { url: /^\/api\/evnmts\/.*/, methods: ['GET', 'PUT'] },
+            { url: /^\/api\/evnmtdtls\/.*/, methods: ['GET', 'PUT'] },
+
+            '/form.html',
+            '/api/evnmts/.*/',
+            '/api/evnmtdtls/.*/',
         ]
     });
 }
-
-/* '/evnmts',
-'/evnmt/:id',
-'/evnmtdtls',
-'/evnmtdtls/:id', */
-
 
 /* const expressJwt = require('express-jwt');
 const config = require('config.json');

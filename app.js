@@ -24,13 +24,15 @@ app.use(jwt());
 // global error handler
 app.use(errorHandler);
 
-app.use(express.static('./public'))
+ app.use(express.static('./public'))
 
 app.get("/", (req, res) => {
   console.log("En réponse à root toute ...")
   res.send("Salut de ROOOOOT ...");
 })
-app.use('/users', require('./users/users.controller'));
+
+app.use('/api/users', require('./routes/users.js'));
+//app.use('/users', require('./users/users.controller'));
 
 // api routes
 
@@ -45,15 +47,18 @@ const routerGroupes = require('./routes/groupes.js')
 const routerAutres = require('./routes/autres.js')
 const expressValidator = require('express-validator')
 
+// app.use('/api', routerPers)
+
 //app.use(routerUsers)
-app.use(routerPers)
-app.use(routerrpnPers)
-app.use(routerEngmtpers)
-app.use(routerEvnmtdtls)
-app.use(routerEvnmts)
-app.use(routerTonts)
-app.use(routerGroupes)
-app.use(routerAutres)
+app.use('/api',routerPers)
+app.use('/api',routerrpnPers)
+app.use('/api',routerEngmtpers)
+app.use('/api',routerEvnmtdtls)
+app.use('/api',routerEvnmts)
+app.use('/api',routerTonts)
+app.use('/api',routerGroupes)
+app.use('/api',routerAutres)
+
 app.use(expressValidator())
 
 // Load our app server using express Somehow

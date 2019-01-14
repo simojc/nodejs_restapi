@@ -55,8 +55,6 @@ router.get('/tontpers/:id', (req, res) => {
 })
 
 
-
-
 router.get('/tontpers', (req, res) => {
     // console.log("Fecthing engmtpers with id: " + req.params.id)
     // const Id = req.params.id
