@@ -65,5 +65,5 @@ app.use(expressValidator())
 // localhost:3003
 var port = process.env.PORT || 3003;
 app.listen(port, () => {
-  console.log("Le serveur a démarré et écoute sur le port 3003 ...");
+  console.log("Le serveur a démarré et écoute sur le port : " + port);
 })
