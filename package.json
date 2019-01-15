@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "author": "JCS",
   "license": "ISC",
@@ -17,5 +18,9 @@
     "jsonwebtoken": "^8.4.0",
     "morgan": "^1.9.1",
     "mysql": "^2.16.0"
+  },
+  "engines": {
+    "node": "9.3.0",
+    "npm": "5.6.0"
   }
 }
