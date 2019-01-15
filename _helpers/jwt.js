@@ -22,6 +22,7 @@ function jwt() {
             '/form.html',
             '/api/evnmts/.*/',
             '/api/evnmtdtls/.*/',
+            '/'
         ]
     });
 }
