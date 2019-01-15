@@ -1,12 +1,24 @@
 const util = require('util')
 const mysql = require('mysql')
-const pool = mysql.createPool({
+
+/* const pool = mysql.createPool({
     connectionLimit: 10,
     host: 'localhost',
     user: 'reunion',
     password: 'reunion',
     database: 'reunion'
+}) */
+
+const pool = mysql.createPool({
+    connectionLimit: 10,
+    host: 'us-cdbr-iron-east-01.cleardb.net',
+    user: 'b5344b67e37662',
+    password: '84921068',
+    database: 'heroku_f7bb7aad50659b5'
 })
+
+// CLEARDB_DATABASE_URL: mysql:
+//  b5344b67e37662:84921068@us-cdbr-iron-east-01.cleardb.net/heroku_f7bb7aad50659b5?reconnect=true
 
 // Ping database to check for common exception errors.
 pool.getConnection((err, connection) => {
