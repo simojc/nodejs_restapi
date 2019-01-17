@@ -20,6 +20,8 @@ const pool = mysql.createPool({
 // CLEARDB_DATABASE_URL: mysql:
 //  b5344b67e37662:84921068@us-cdbr-iron-east-01.cleardb.net/heroku_f7bb7aad50659b5?reconnect=true
 
+// mysql --host=us-cdbr-iron-east-01.cleardb.net --user=b5344b67e37662 --password=84921068 heroku_f7bb7aad50659b5
+
 // Ping database to check for common exception errors.
 pool.getConnection((err, connection) => {
     if (err) {

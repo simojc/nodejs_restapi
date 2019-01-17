@@ -12,17 +12,16 @@ function jwt() {
             // public routes that don't require authentication
             '/api/users/register',
             '/api/users/authenticate',
-            { url: /^\/meeting\/.*/, methods: ['GET', 'PUT'] },
-    
             { url: '/api/evnmts', methods: ['GET'] },
             { url: '/api/evnmtdtls', methods: ['GET'] },
-            { url: /^\/api\/evnmts\/.*/, methods: ['GET', 'PUT'] },
-            { url: /^\/api\/evnmtdtls\/.*/, methods: ['GET', 'PUT'] },
+            // { url: /^\/api\/evnmts\/.*/, methods: ['GET', 'PUT'] },
+            // { url: /^\/api\/evnmtdtls\/.*/, methods: ['GET', 'PUT'] },
 
             '/form.html',
-            '/api/evnmts/.*/',
-            '/api/evnmtdtls/.*/',
-            '/'
+            // '/api/evnmts/.*/',
+            //  '/api/evnmtdtls/.*/',
+            '/',
+            '/user_create'
         ]
     });
 }
