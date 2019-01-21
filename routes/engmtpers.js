@@ -8,7 +8,7 @@ const router = express.Router()
 const pool = require('../database')
 
 router.get('/engmtpers/:id', (req, res) => {
-    console.log("Fecthing engmtpers with id: " + req.params.id)
+    // console.log("Fecthing engmtpers with id: " + req.params.id)
     const Id = req.params.id
    
     if (!req.query.groupe) {
@@ -43,12 +43,10 @@ router.get('/engmtpers/:id', (req, res) => {
             res.end
             return
         }
-        console.log("Interrogation de base des données réussie engmtpers")
+        // console.log("Interrogation de base des données réussie engmtpers")
         res.json(rows)
     })
 })
-
-
 
 router.get('/engmtpers', (req, res) => {
    // console.log("Fecthing engmtpers with id: " + req.params.id)
@@ -84,11 +82,28 @@ const GpeId = req.query.groupe;
             res.end
             return
         }
-        console.log("Interrogation de base des données réussie engmtpers" + JSON.stringify(rows))
+        // console.log("Interrogation de base des données réussie engmtpers" + JSON.stringify(rows))
         res.json(rows)
     })
 })
 
+
+router.get('/uneligneengmtpers/:id', (req, res) => {
+    // console.log("Fecthing engmtpers with id: " + req.params.id)
+    // Retourne une ligne de la table tontpers
+    const Id = req.params.id
+    const queryString = "SELECT * FROM engmtpers WHERE id = ?"
+    pool.query(queryString, [Id], (err, rows, fields) => {
+        if (err) {
+            console.log("Failled to query for engmtpers: " + err)
+            res.sendStatus(500)
+            res.end
+            return
+        }
+     //   console.log("Interrogation de base des données réussie rpnpers")
+        res.json(rows)
+    })
+})
 
 router.get("/engmts", (req, res) => {
     const queryString = "SELECT * from engmts "
@@ -100,7 +115,7 @@ router.get("/engmts", (req, res) => {
             //throw err
             return
         }
-        console.log("Interrogation de base des données engmts réussie")
+        // console.log("Interrogation de base des données engmts réussie")
        res.json(rows)
     })
 })
@@ -120,7 +135,7 @@ router.post('/engmtpers', [
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-console.log('req.body = ' + JSON.stringify(req.body));
+// console.log('req.body = ' + JSON.stringify(req.body));
 
     const engmt_id = req.body.engmt_id;
     const pers_id = req.body.pers_id;
@@ -154,10 +169,50 @@ console.log('req.body = ' + JSON.stringify(req.body));
             } catch (err) {
                 throw new Error(err);
             }
-            console.log("Insertion nouvelle tontpers avec l'id: " + result.insertId);
+            // console.log("Insertion nouvelle tontpers avec l'id: " + result.insertId);
             res.end;
     })
 });
 
+
+router.put('/engmtpers/:id', [
+    check('pers_id', 'la personne est obligatoire ').exists(),
+    check('engmt_id', 'l engagement est obligatoire ').exists(),
+    check('exercice', 'l exercice est obligatoire').exists(),                   
+    check('mont', 'le montant est obligatoire ').exists(),
+    check('dtchgst', 'la date statut est obligatoire ').exists(),
+    check('statut', 'le statut est obligatoire ').exists(),
+    ], (req, res, next) => {
+// Finds the validation errors in this request and wraps them in an object with handy functions
+const errors = validationResult(req);
+if (!errors.isEmpty()) {
+return res.status(422).json({ errors: errors.array() });
+}
+// console.log('req.body = ' + JSON.stringify(req.body));
+
+const engmt_id = req.body.engmt_id;
+const pers_id = req.body.pers_id;
+const exercice = req.body.exercice;
+const mont = req.body.mont;
+const statut = req.body.statut;
+const dtchgst = req.body.dtchgst;
+const message = req.body.message;
+const dateDuJour = new Date();
+
+const Id = req.params.id
+      
+              const queryString = `UPDATE engmtpers SET mont = ?,statut = ?,dtchgst = ?, message = ?,updated_at = ? 
+                                        WHERE id = ?`;
+              try {
+                  //var result = await pool.query(queryString,...  // cas Asynchrone
+                  var result =  pool.query(queryString, [mont ,statut ,dtchgst, message , dateDuJour , Id]);
+                      res.end;
+                      console.log("result = " + JSON.stringify(result));
+              } catch (err) {
+                  throw new Error(err);
+              }
+              console.log("MAJ engmtpers avec SUCCÈS " );
+              res.end;
+      })
 
 module.exports = router

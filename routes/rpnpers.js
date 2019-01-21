@@ -38,7 +38,7 @@ router.get("/rpnpers", (req, res) => {
 })
 
 router.get('/rpnpers/:id', (req, res) => {
-    console.log("Fecthing rpnpers with id: " + req.params.id)
+    // console.log("Fecthing rpnpers with id: " + req.params.id)
     const Id = req.params.id
     const queryString = "SELECT * FROM rpnpers WHERE id = ?"
     pool.query(queryString, [Id], (err, rows, fields) => {
@@ -48,11 +48,10 @@ router.get('/rpnpers/:id', (req, res) => {
             res.end
             return
         }
-        console.log("Interrogation de base des données réussie rpnpers")
+        // console.log("Interrogation de base des données réussie rpnpers")
         res.json(rows)
     })
 })
-
 
 const { check, validationResult } = require('express-validator/check');
 
@@ -77,7 +76,7 @@ router.post('/rpnpers', [
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-    console.log('req.body = ' + JSON.stringify(req.body));
+   // console.log('req.body = ' + JSON.stringify(req.body));
 
     const groupe_id = req.body.groupe_id;
     const pers_id = req.body.pers_id;
@@ -112,7 +111,7 @@ router.post('/rpnpers', [
             } catch (err) {
                 throw new Error(err);
             }
-            console.log("Insertion nouvelle rpnpers avec l'id: " + result.insertId);
+            // console.log("Insertion nouvelle rpnpers avec l'id: " + result.insertId);
             res.end;
     })
 });
@@ -129,7 +128,7 @@ const errors = validationResult(req);
 if (!errors.isEmpty()) {
 return res.status(422).json({ errors: errors.array() });
 }
-console.log('req.body = ' + JSON.stringify(req.body));
+// console.log('req.body = ' + JSON.stringify(req.body));
 
 const groupe_id = req.body.groupe_id;
 const pers_id = req.body.pers_id;
@@ -143,17 +142,17 @@ const dateDuJour = new Date();
 
 const Id = req.params.id
       
-              const queryString = `UPDATE rpnpers SET dtadh = ?,mtrle = ?,depot = ?,dtmajdpt                        = ?, created_at = ?,updated_at = ? 
+              const queryString = `UPDATE rpnpers SET dtadh = ?,mtrle = ?,depot = ?,dtmajdpt = ?,updated_at = ? 
                                         WHERE id = ?`;
               try {
                   //var result = await pool.query(queryString,...  // cas Asynchrone
-                  var result =  pool.query(queryString, [dtadh, mtrle,depot,dtmajdpt,dateDuJour, dateDuJour, Id]);
+                  var result =  pool.query(queryString, [dtadh, mtrle,depot,dtmajdpt, dateDuJour, Id]);
                       res.end;
-                      console.log("result = " + JSON.stringify(result));
+                      // console.log("result = " + JSON.stringify(result));
               } catch (err) {
                   throw new Error(err);
               }
-              console.log("MAJ rpnpers avec SUCCÈS " );
+              // console.log("MAJ rpnpers avec SUCCÈS " );
               res.end;
       })
   

@@ -44,7 +44,7 @@ router.get("/pers", (req, res) => {
     }
 
     if ((requestedPersType == 1) && (requestedPersEmail == 1)) {
-        queryString = "SELECT * FROM pers";
+        queryString = "SELECT * FROM pers ORDER BY nom";
         pool.query(queryString, (err, rows, fields) => {
             if (err) {
                 console.log("Failled to query for Pers: " + err)
@@ -80,6 +80,7 @@ router.get("/pers", (req, res) => {
                 FROM pers
                 WHERE UPPER(substr(pers.type,1,1)) = ? 
                 and pers.groupe_id = ? 
+                ORDER BY nom_pers
                 `;
                 pool.query(queryString, [requestedPersType,requestedPersGroupe], (err, rows, fields) => {
                     if (err) {
@@ -152,7 +153,7 @@ console.log('req.body = ' + JSON.stringify(req.body));
     const groupe_id = req.body.groupe_id
     const dateDuJour = new Date()
     
-    pool.query("SELECT id FROM pers WHERE pers.email = ? ", [email], (err, rows, fields) => {
+    pool.query("SELECT id FROM pers WHERE pers.email = ?  ", [email], (err, rows, fields) => {
         if (err) {
             console.log("Failled to query for Pers: " + err)
             res.sendStatus(500)
