@@ -12,9 +12,6 @@ app.use(bodyParser.json());
 app.use(morgan('short'))
 // app.use(morgan('combined'))
 
-
-
-
 var corsOptions = {
    // origin: 'http://localhost:4200',
   // origin: 'https://gestasso.herokuapp.com',

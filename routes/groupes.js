@@ -23,8 +23,8 @@ router.get("/groupes", (req, res) => {
     })
 
 })
-
-router.get('/groupes/:id', (req, res) => {
+///////
+router.get('/groupe/:id', (req, res) => {
    // console.log("Fecthing evnmt with id: " + req.params.id)
     const Id = req.params.id
     const queryString = "SELECT * FROM groupes WHERE id = ?"
