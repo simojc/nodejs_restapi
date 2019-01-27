@@ -97,7 +97,7 @@ async function create(req, res) {
             return
         }
         if (rows.length > 0) {
-            console.log('Un utilisaeur avec le courriel ' + email + ' existe déjà');
+            //console.log('Un utilisaeur avec le courriel ' + email + ' existe déjà');
             res.end('Un utilisaeur avec le courriel ' + email + ' existe déjà');
             return
             // return res.status(400).json({ errors: 'Un utilisaeur avec le courriel ' + email + ' existe déjà'}) 

@@ -8,10 +8,9 @@ const router = express.Router()
 
 const pool = require('../database')
 
-router.get("/rpnpers", (req, res) => {
-    var respId = req.query.resp_id;
-    console.log("Fecthing rpnpers with resp_id: " + req.query.resp_id)
-    console.log(".... respId = "+respId)
+router.get("/rpngroupe", (req, res) => {
+    var groupeId = req.query.groupe_id;
+   // console.log("groupeId = " + JSON.stringify(groupeId))
     const queryString = `
                     SELECT
                     rpnpers.*, CONCAT(personne.nom, ' ', personne.prenom) nom_pers,
@@ -22,9 +21,10 @@ router.get("/rpnpers", (req, res) => {
                     FROM rpnpers
                     LEFT JOIN pers as personne ON personne.id = rpnpers.pers_id
                     LEFT JOIN pers as repdt ON repdt.id = rpnpers.repdt1_id
-                    WHERE rpnpers.repdt1_id = ?
+                    WHERE rpnpers.groupe_id = ?
+                    ORDER BY personne.nom
                      `;
-    pool.query(queryString, [respId], (err, rows, fiels) => {
+    pool.query(queryString, [groupeId], (err, rows, fiels) => {
         if (err) {
             console.log("Failled to query for rpnPers: " + err)
             res.sendStatus(500)
@@ -32,7 +32,38 @@ router.get("/rpnpers", (req, res) => {
             //throw err
             return
         }
-        console.log("Interrogation de base des données réussie de rpnPers")
+       // console.log("rpngroupe = " + JSON.stringify(rows))
+        res.json(rows)
+    })
+})
+
+
+router.get("/rpnpers", (req, res) => {
+    var respId = req.query.resp_id;
+   // console.log("respId = " + JSON.stringify(respId))
+  
+    const queryString = `
+                    SELECT
+                    rpnpers.*, CONCAT(personne.nom, ' ', personne.prenom) nom_pers,
+                    personne.prenom prenom_pers,
+                    CONCAT(repdt.nom, ' ', repdt.prenom) nom_repdt, repdt.prenom prenom_repdt,
+                    CASE(rpnpers.depot - 10) < 0
+                    when true then 'Dépôt à compléter le plus tôt possible' END as message
+                    FROM rpnpers
+                    LEFT JOIN pers as personne ON personne.id = rpnpers.pers_id
+                    LEFT JOIN pers as repdt ON repdt.id = rpnpers.repdt1_id
+                    WHERE rpnpers.repdt1_id = ? OR rpnpers.repdt2_id = ? 
+                    ORDER BY personne.nom
+                     `;
+    pool.query(queryString, [respId, respId], (err, rows, fiels) => {
+        if (err) {
+            console.log("Failled to query for rpnPers: " + err)
+            res.sendStatus(500)
+            res.end
+            //throw err
+            return
+        }
+       // console.log("rpnPers = " + JSON.stringify(rows))
         res.json(rows)
     })
 })
@@ -54,15 +85,6 @@ router.get('/rpnpers/:id', (req, res) => {
 })
 
 const { check, validationResult } = require('express-validator/check');
-
-/*      groupe_id
-        pers_id: ['', Validators.required],
-      repdt1_id: ['', Validators.required],
-      repdt2_id: '',
-      dtadh: ['', Validators.required],
-      mtrle: ['', Validators.required],
-      depot: '',
-      dtmajdpt: '', */
 
 router.post('/rpnpers', [
                     check('groupe_id', 'le groupe est obligatoire ').exists(),
