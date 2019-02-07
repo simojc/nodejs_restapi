@@ -143,7 +143,7 @@ router.post('/pers', [
     if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
     }
-    console.log('req.body = ' + JSON.stringify(req.body));
+    // console.log('req.body = ' + JSON.stringify(req.body));
     const type = req.body.type
     const nom = req.body.nom
     const prenom = req.body.prenom

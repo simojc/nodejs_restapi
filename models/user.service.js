@@ -43,7 +43,7 @@ async function authenticate({ email, password }) {
     }
 }
 
-async function getAll() {
+async function getAll(GroupeId) {
     let users = []
 
     const queryString = `SELECT
@@ -51,9 +51,10 @@ async function getAll() {
             groupes.nom, groupes.descr
                     FROM users
             LEFT JOIN groupes
-            ON groupes.id = users.groupe_id`;
+            ON groupes.id = users.groupe_id
+            WHERE  users.groupe_id = ?`;
     try {
-        var result = await pool.query(queryString)
+        var result = await pool.query(queryString, [GroupeId])
     } catch (err) {
         throw new Error(err)
     }
@@ -113,7 +114,7 @@ async function create(req, res) {
                 groupe_id = rows[0].groupe_id
                 const queryString = "INSERT INTO users(groupe_id,name,email,password,admin, created_at) VALUES(?,?,?,?, ?, ?)"
                 try {
-                    console.log(" user = [groupe_id, name, email, password, admin, dateDuJour] = [ " + groupe_id + "; " + name + "; " + email + "; " + password + "; " + admin + "; " + dateDuJour + "]");
+                   // console.log(" user = [groupe_id, name, email, password, admin, dateDuJour] = [ " + groupe_id + "; " + name + "; " + email + "; " + password + "; " + admin + "; " + dateDuJour + "]");
                     var result = pool.query(queryString, [groupe_id, name, email, password, admin, dateDuJour]);
                     res.end;
                 } catch (err) {
