@@ -20,7 +20,7 @@ router.get('/engmtpers/:id', (req, res) => {
     }
     const GpeId = req.query.groupe;
 
-    const queryString = `SELECT 	engmtpers.*,
+    const queryString = `SELECT engmtpers.*,
                             engmts.groupe_id,
                             engmts.nom as nom_engmt,
                             engmts.descr,
@@ -37,6 +37,49 @@ router.get('/engmtpers/:id', (req, res) => {
                         WHERE engmtpers.pers_id = ? AND engmts.groupe_id = ?
                         `;
     pool.query(queryString, [Id, GpeId], (err, rows, fields) => {
+        if (err) {
+            console.log("Failled to query for engmtpers: " + err)
+            res.sendStatus(500)
+            res.end
+            return
+        }
+        // console.log("Interrogation de base des données réussie engmtpers")
+        res.json(rows)
+    })
+})
+
+
+
+router.get('/persengmt/:id', (req, res) => {
+    // console.log("Fecthing engmtpers with id: " + req.params.id)
+    const IdEngmt = req.params.id
+   
+    if (!req.query.groupe) {
+        console.log("Requête échouée, le groupe doit être renseigné")
+        res.sendStatus(500)
+        res.end
+        //throw err
+        return
+    }
+    const GpeId = req.query.groupe;
+
+    const queryString = `SELECT engmtpers.*,
+                            engmts.groupe_id,
+                            engmts.nom as nom_engmt,
+                            engmts.descr,
+                            engmts.periodicite,
+                            engmts.periode,
+                            engmts.statut as stat_engmt,
+                            engmts.mont_unit,
+                            engmtpers.mont ,
+                            engmts.dt_ech,
+                            CONCAT(pers.nom , ' ', pers.prenom) nom_prenom
+                        FROM	engmtpers
+                        LEFT JOIN engmts ON engmtpers.engmt_id = engmts.id
+                        LEFT JOIN pers  ON engmtpers.pers_id = pers.id
+                        WHERE engmtpers.engmt_id = ? AND engmts.groupe_id = ?
+                        `;
+    pool.query(queryString, [IdEngmt, GpeId], (err, rows, fields) => {
         if (err) {
             console.log("Failled to query for engmtpers: " + err)
             res.sendStatus(500)
@@ -136,7 +179,6 @@ router.post('/engmtpers', [
     return res.status(422).json({ errors: errors.array() });
   }
 // console.log('req.body = ' + JSON.stringify(req.body));
-
     const engmt_id = req.body.engmt_id;
     const pers_id = req.body.pers_id;
     const exercice = req.body.exercice;
