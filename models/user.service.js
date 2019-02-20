@@ -17,18 +17,6 @@ module.exports = {
     _delete
 };
 
-/* router.post('/login', function(req, res) {
-    User.findOne({ email: req.body.email }, function (err, user) {
-      if (err) return res.status(500).send('Error on the server.');
-      if (!user) return res.status(404).send('No user found.');
-      var passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
-      if (!passwordIsValid) return res.status(401).send({ auth: false, token: null });
-      var token = jwt.sign({ id: user._id }, config.secret, {
-        expiresIn: 86400 // expires in 24 hours
-      });
-      res.status(200).send({ auth: true, token: token });
-    });
-  }); */
 
   async function authenticate({ email, password }) {
     // console.log("email = " + email);
@@ -43,9 +31,15 @@ module.exports = {
     }
     const user = result[0];
 
+    if (!user){
+        console.log("Aucun utilisateur correspondant à ce courriel... ");
+        throw 'Aucun utilisateur correspondant à ce courriel...';
+    }
+
     var passwordIsValid = bcrypt.compareSync(password, user.password);
-      if (!passwordIsValid)   throw 'Courriel ou mot de passe incorrect...';
-      // console.log("passwordIsValid = " + passwordIsValid);
+    if (!passwordIsValid)   throw 'Mot de passe incorrect...';
+          
+        // console.log("passwordIsValid = " + passwordIsValid);
     if (user) {
         const token = jwt.sign({ sub: user.id }, config.secret, { expiresIn: 60 * 60 * 12 }); // une minute
         // const token = jwt.sign({ sub: user.id }, config.secret, { expiresIn: 60 * 60 * 24 * 7 }) // one week
@@ -54,6 +48,40 @@ module.exports = {
             ...userWithoutPassword,
             token
         };
+    }
+  
+}
+
+  async function authenticate2({ email, password }) {
+    // console.log("email = " + email);
+    // console.log("hashedPassword = " + hashedPassword);
+
+    var hashedPassword = bcrypt.hashSync(password, 8);
+   // console.log("hashedPassword = " + hashedPassword);
+    const queryString = "SELECT * FROM users WHERE email=? "
+    try {
+        var result = await pool.query(queryString, [email, hashedPassword])
+    } catch (err) {
+        console.log("Erreur lors de la recherche utilisateur. err = " + err);
+        throw new Error(err)
+    }
+    const user = result[0];
+    if (user) {
+    var passwordIsValid = bcrypt.compareSync(password, user.password);
+      if (!passwordIsValid)   throw 'Mot de passe incorrect...';
+      // console.log("passwordIsValid = " + passwordIsValid);
+    
+        const token = jwt.sign({ sub: user.id }, config.secret, { expiresIn: 60 * 60 * 12 }); // une minute
+        // const token = jwt.sign({ sub: user.id }, config.secret, { expiresIn: 60 * 60 * 24 * 7 }) // one week
+        const { password, ...userWithoutPassword } = user;
+        return {
+            ...userWithoutPassword,
+            token
+        };
+    }
+    else {
+        console.log("Aucun utilisateur correspondant à ce courriel... ");
+        throw 'Aucun utilisateur correspondant à ce courriel...';
     }
 }
 
